@@ -6,8 +6,7 @@
 }
 
 body {
-    background: url("VID_20261106_011253_146.mp4
-        ") no-repeat center center fixed;
+        background: linear-gradient(180deg, #0f172a, #020617) fixed;
 background-size: cover;
     color: #e2e8f0;
     font-family: 'Segoe UI', Arial, sans-serif;
