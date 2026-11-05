@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Ramazan | 3D Fractal Lab</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0b0f1a; font-family: system-ui, sans-serif; color: #e8ecff; }
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  .hud { position: fixed; left: 16px; right: 16px; top: 14px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+  .hud a { pointer-events: auto; color: #e8ecff; text-decoration: none; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.08); backdrop-filter: blur(8px); font-size: 14px; }
+  .hud span { font-size: 12px; opacity: .65; }
+  .hint { position: fixed; bottom: 18px; width: 100%; text-align: center; font-size: 12px; opacity: .6; pointer-events: none; }
+  #err { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; padding: 24px; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="hud">
+  <a href="index.html">&larr; Orqaga</a>
+  <span id="fps">Mandelbulb ray-marcher</span>
+</div>
+<div class="hint">Barmoq bilan aylantiring &middot; g'ildirak / pinch bilan yaqinlashtiring</div>
+<div id="err">Brauzeringiz WebGL'ni qo'llab-quvvatlamaydi.</div>
+
+<script id="vs" type="x-shader/x-vertex">
+attribute vec2 a;
+void main(){ gl_Position = vec4(a, 0.0, 1.0); }
+</script>
+
+<script id="fs" type="x-shader/x-fragment">
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+
+uniform vec2  uRes;
+uniform float uTime;
+uniform vec2  uRot;   // yaw, pitch
+uniform float uZoom;  // camera distance
+
+float POWER;
+
+// Distance estimator: .x = distance, .y = orbit trap
+vec2 map(vec3 p) {
+  vec3 z = p;
+  float dr = 1.0, r = 0.0, trap = 1e9;
+  for (int i = 0; i < 7; i++) {
+    r = length(z);
+    if (r > 2.0) break;
+    float theta = acos(clamp(z.z / max(r, 1e-6), -1.0, 1.0)) * POWER;
+    float phi   = atan(z.y, z.x) * POWER;
+    dr = pow(r, POWER - 1.0) * POWER * dr + 1.0;
+    float zr = pow(r, POWER);
+    z = zr * vec3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)) + p;
+    trap = min(trap, dot(z, z));
+  }
+  return vec2(0.5 * log(max(r, 1e-6)) * r / dr, trap);
+}
+
+vec3 normalAt(vec3 p, float e) {
+  vec2 k = vec2(1.0, -1.0);
+  return normalize(
+    k.xyy * map(p + k.xyy * e).x +
+    k.yyx * map(p + k.yyx * e).x +
+    k.yxy * map(p + k.yxy * e).x +
+    k.xxx * map(p + k.xxx * e).x
+  );
+}
+
+vec3 palette(float t) {
+  return 0.5 + 0.5 * cos(6.2831 * (vec3(1.0, 1.0, 1.0) * t + vec3(0.62, 0.45, 0.25)));
+}
+
+void main() {
+  POWER = 6.0 + 2.0 * sin(uTime * 0.25);
+
+  vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / min(uRes.x, uRes.y);
+
+  // Orbit camera
+  float cy = cos(uRot.x), sy = sin(uRot.x), cp = cos(uRot.y), sp = sin(uRot.y);
+  vec3 ro = uZoom * vec3(sy * cp, sp, cy * cp);
+  vec3 fw = normalize(-ro);
+  vec3 rt = normalize(cross(vec3(0.0, 1.0, 0.0), fw));
+  vec3 up = cross(fw, rt);
+  vec3 rd = normalize(fw * 1.6 + rt * uv.x + up * uv.y);
+
+  // Background gradient + soft vignette
+  vec3 bg = mix(vec3(0.03, 0.04, 0.09), vec3(0.18, 0.08, 0.30), smoothstep(-0.6, 0.9, uv.y + 0.2));
+  bg *= 1.0 - 0.5 * dot(uv, uv);
+
+  float t = max(0.0, uZoom - 1.6);
+  float glow = 0.0;
+  float minD = 1e9;
+  vec2 h = vec2(1.0);
+  bool hit = false;
+  float steps = 0.0;
+
+  for (int i = 0; i < 110; i++) {
+    h = map(ro + rd * t);
+    minD = min(minD, h.x);
+    float eps = 0.0006 * t;
+    if (h.x < eps) { hit = true; steps = float(i); break; }
+    t += h.x * 0.9;
+    if (t > uZoom + 2.5) break;
+    steps = float(i);
+  }
+
+  vec3 col = bg;
+  col += vec3(0.35, 0.55, 1.0) * exp(-minD * 22.0) * 0.45; // neon halo
+
+  if (hit) {
+    vec3 p = ro + rd * t;
+    vec3 n = normalAt(p, 0.0012 * t);
+    vec3 l = normalize(vec3(0.6, 0.8, 0.5));
+
+    float diff = clamp(dot(n, l), 0.0, 1.0);
+    float rim  = pow(1.0 - clamp(dot(n, -rd), 0.0, 1.0), 3.0);
+    float ao   = clamp(1.0 - steps / 110.0 * 1.6, 0.0, 1.0);
+    float spec = pow(clamp(dot(reflect(-l, n), -rd), 0.0, 1.0), 24.0);
+
+    vec3 base = palette(0.35 * log(h.y + 1.0) + 0.1 * uTime * 0.2);
+    col = base * (0.15 + 0.95 * diff) * ao;
+    col += rim * vec3(0.4, 0.6, 1.0) * 0.55;
+    col += spec * 0.5;
+  }
+
+  col = pow(col, vec3(0.4545));          // gamma
+  col = mix(col, smoothstep(0.0, 1.0, col), 0.35); // slight contrast
+  gl_FragColor = vec4(col, 1.0);
+}
+</script>
+
+<script>
+(function () {
+  const canvas = document.getElementById('c');
+  const gl = canvas.getContext('webgl', { antialias: false, powerPreference: 'high-performance' });
+  if (!gl) { document.getElementById('err').style.display = 'flex'; return; }
+
+  function compile(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      const el = document.getElementById('err');
+      el.style.display = 'flex';
+      el.textContent = 'Shader xatosi: ' + gl.getShaderInfoLog(s);
+      throw new Error(gl.getShaderInfoLog(s));
+    }
+    return s;
+  }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER, document.getElementById('vs').textContent));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, document.getElementById('fs').textContent));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'a');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  const uRes = gl.getUniformLocation(prog, 'uRes');
+  const uTime = gl.getUniformLocation(prog, 'uTime');
+  const uRot = gl.getUniformLocation(prog, 'uRot');
+  const uZoom = gl.getUniformLocation(prog, 'uZoom');
+
+  // Adaptive resolution: keeps it smooth on phones
+  let scale = 0.55;
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.max(2, Math.floor(innerWidth * dpr * scale));
+    canvas.height = Math.max(2, Math.floor(innerHeight * dpr * scale));
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  addEventListener('resize', resize);
+  resize();
+
+  // Interaction
+  let yaw = 0.6, pitch = 0.25, zoom = 3.2;
+  let vy = 0.004, vp = 0;          // inertia
+  let dragging = false, lx = 0, ly = 0;
+  const pointers = new Map();
+  let pinchDist = 0;
+
+  canvas.addEventListener('pointerdown', e => {
+    canvas.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    dragging = true; lx = e.clientX; ly = e.clientY; vy = vp = 0;
+    if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      pinchDist = Math.hypot(a.x - b.x, a.y - b.y);
+    }
+  });
+  canvas.addEventListener('pointermove', e => {
+    if (!pointers.has(e.pointerId)) return;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      zoom = Math.min(6, Math.max(1.8, zoom * (pinchDist / d)));
+      pinchDist = d;
+    } else if (dragging) {
+      vy = (e.clientX - lx) * 0.006;
+      vp = (e.clientY - ly) * 0.006;
+      yaw -= vy; pitch = Math.max(-1.4, Math.min(1.4, pitch + vp));
+      lx = e.clientX; ly = e.clientY;
+    }
+  });
+  const end = e => { pointers.delete(e.pointerId); if (!pointers.size) dragging = false; };
+  canvas.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    zoom = Math.min(6, Math.max(1.8, zoom * (1 + e.deltaY * 0.001)));
+  }, { passive: false });
+
+  // Loop + auto quality
+  const fpsEl = document.getElementById('fps');
+  let last = performance.now(), acc = 0, frames = 0;
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+
+    if (!dragging) {
+      yaw -= vy; pitch = Math.max(-1.4, Math.min(1.4, pitch + vp));
+      vy += (0.004 - vy) * 0.02;   // ease back to slow auto-rotate
+      vp *= 0.95;
+    }
+
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform1f(uTime, now / 1000);
+    gl.uniform2f(uRot, yaw, pitch);
+    gl.uniform1f(uZoom, zoom);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    acc += dt; frames++;
+    if (acc > 1) {
+      const fps = frames / acc;
+      fpsEl.textContent = 'Mandelbulb \u00b7 ' + Math.round(fps) + ' FPS';
+      if (fps < 24 && scale > 0.3) { scale -= 0.08; resize(); }
+      else if (fps > 55 && scale < 0.9) { scale += 0.05; resize(); }
+      acc = 0; frames = 0;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
