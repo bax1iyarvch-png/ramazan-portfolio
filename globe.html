@@ -4,25 +4,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ramazan 3D Lab</title>
+<title>Ramazan 3D Globe</title>
 <style>
 body {
   margin: 0;
-  background: #020817;
-  color: white;
+  background: #020617;
+  overflow: hidden;
   font-family: Arial;
-  text-align: center;
 }
-h2 { padding-top: 15px; }
 #globeViz {
+  width: 100vw;
+  height: 100vh;
+}
+h2 {
+  position: absolute;
+  top: 15px;
   width: 100%;
-  height: 75vh;
+  text-align: center;
+  color: white;
+  z-index: 2;
 }
 </style>
 </head>
 <body>
 
-<h2>🌍 Ramazan 3D Lab</h2>
+<h2>🌍 Ramazan 3D Globe</h2>
 <div id="globeViz"></div>
 
 <script src="https://unpkg.com/globe.gl"></script>
@@ -32,14 +38,29 @@ const globe = Globe()
   .globeImageUrl(
     'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg'
   )
-  .backgroundColor('#020817')
+  .bumpImageUrl(
+    'https://unpkg.com/three-globe/example/img/earth-topology.png'
+  )
+  .backgroundColor('#020617')
   .showAtmosphere(true)
-  .atmosphereColor('#168cff')
-  .atmosphereAltitude(0.15);
+  .atmosphereColor('#38bdf8')
+  .atmosphereAltitude(0.18)
+  .width(window.innerWidth)
+  .height(window.innerHeight);
 
 const controls = globe.controls();
+
 controls.autoRotate = true;
 controls.autoRotateSpeed = 0.5;
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.enableZoom = true;
+controls.enablePan = false;
+
+window.addEventListener('resize', () => {
+  globe.width(window.innerWidth);
+  globe.height(window.innerHeight);
+});
 </script>
 
 </body>
