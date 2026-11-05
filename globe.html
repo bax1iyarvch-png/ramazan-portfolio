@@ -4,62 +4,132 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Globusss</title>
+
+<link rel="stylesheet"
+href="https://cesium.com/downloads/cesiumjs/releases/1.130/Build/Cesium/Widgets/widgets.css">
+
 <style>
-body {
+* {
   margin: 0;
-  background: #020617;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #cesiumContainer {
+  width: 100%;
+  height: 100%;
   overflow: hidden;
+  background: #020617;
+}
+
+.title {
+  position: fixed;
+  top: 18px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: #38bdf8;
+  font-size: 23px;
   font-family: Arial;
+  z-index: 10;
+  pointer-events: none;
+  text-shadow: 0 0 15px #008cff;
 }
-#globeViz {
-  width: 100vw;
-  height: 100vh;
-}
-h2 {
-  position: absolute;
-  top: 15px;
+
+.hint {
+  position: fixed;
+  bottom: 25px;
+  left: 0;
   width: 100%;
   text-align: center;
   color: white;
-  z-index: 2;
+  font-size: 13px;
+  z-index: 10;
+  pointer-events: none;
 }
 </style>
 </head>
+
 <body>
 
-<h2>🌍 Globusss</h2>
-<div id="globeViz"></div>
+<div class="title">🌍 Globusss</div>
 
-<script src="https://unpkg.com/globe.gl"></script>
+<div id="cesiumContainer"></div>
+
+<div class="hint">
+  ☝️ Aylantir • 🤏 Yaqinlashtir
+</div>
+
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.130/Build/Cesium/Cesium.js"></script>
+
 <script>
-const globe = Globe()
-(document.getElementById('globeViz'))
-  .globeImageUrl(
-    'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg'
-  )
-  .bumpImageUrl(
-    'https://unpkg.com/three-globe/example/img/earth-topology.png'
-  )
-  .backgroundColor('#020617')
-  .showAtmosphere(true)
-  .atmosphereColor('#38bdf8')
-  .atmosphereAltitude(0.18)
-  .width(window.innerWidth)
-  .height(window.innerHeight);
+async function startEarth() {
 
-const controls = globe.controls();
+  const viewer = new Cesium.Viewer(
+    "cesiumContainer",
+    {
+      baseLayer: false,
+      animation: false,
+      timeline: false,
+      geocoder: false,
+      homeButton: false,
+      sceneModePicker: false,
+      navigationHelpButton: false,
+      baseLayerPicker: false,
+      fullscreenButton: false,
+      infoBox: false,
+      selectionIndicator: false
+    }
+  );
 
-controls.autoRotate = true;
-controls.autoRotateSpeed = 0.5;
-controls.enableDamping = true;
-controls.dampingFactor = 0.08;
-controls.enableZoom = true;
-controls.enablePan = false;
+  // Satellite Earth
+  const satellite =
+    await Cesium.ArcGisMapServerImageryProvider.fromUrl(
+      "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"
+    );
 
-window.addEventListener('resize', () => {
-  globe.width(window.innerWidth);
-  globe.height(window.innerHeight);
+  viewer.imageryLayers.addImageryProvider(satellite);
+
+  // City and place names
+  const labels =
+    await Cesium.ArcGisMapServerImageryProvider.fromUrl(
+      "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer"
+    );
+
+  viewer.imageryLayers.addImageryProvider(labels);
+
+  // Realistic globe
+  viewer.scene.globe.enableLighting = true;
+  viewer.scene.globe.showGroundAtmosphere = true;
+
+  // Finger rotation and zoom
+  const cameraController =
+    viewer.scene.screenSpaceCameraController;
+
+  cameraController.enableRotate = true;
+  cameraController.enableZoom = true;
+  cameraController.enableTilt = true;
+  cameraController.enableLook = true;
+  cameraController.minimumZoomDistance = 100;
+  cameraController.maximumZoomDistance = 40000000;
+
+  // Start near Uzbekistan
+  viewer.camera.flyTo({
+    destination: Cesium.Cartesian3.fromDegrees(
+      69.24,
+      41.31,
+      18000000
+    ),
+    duration: 3
+  });
+
+  window.viewer = viewer;
+}
+
+startEarth().catch(error => {
+  console.error("Earth loading error:", error);
 });
 </script>
 
