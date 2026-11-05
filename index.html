@@ -1,107 +1,207 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ramazan | Portfolio</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0b1426;color:#e2e8f0;font-family:system-ui,sans-serif;min-height:100vh;text-align:center;overflow-x:hidden}
-#bg{position:fixed;inset:0;z-index:-1}
-main{max-width:520px;margin:0 auto;padding:48px 16px 40px}
-.tag{font-family:monospace;font-size:12px;color:#22c55e;letter-spacing:1px}
-h1{font-size:32px;font-weight:500;line-height:1.2;margin-top:12px;min-height:78px}
-.role{color:#38bdf8;font-size:17px;margin-top:6px;min-height:26px}
-.cur{display:inline-block;width:2px;height:1em;background:#38bdf8;margin-left:3px;vertical-align:-2px;animation:bl 1s steps(1) infinite}
-@keyframes bl{50%{opacity:0}}
-.links{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:12px;border:1px solid #1e4a6e;background:rgba(10,30,50,.8);color:#7dd3fc;text-decoration:none;font-size:15px;transition:.15s}
-.btn:hover,.btn:active{transform:translateY(-3px) scale(1.03);border-color:#38bdf8;background:rgba(14,50,80,.95)}
-.term{margin-top:24px;border-radius:12px;border:1px solid #1e4a6e;background:rgba(3,7,20,.88);overflow:hidden;text-align:left}
-.bar{display:flex;align-items:center;gap:6px;padding:8px 12px;background:rgba(20,26,48,.9)}
-.bar i{width:10px;height:10px;border-radius:50%}
-.bar span{font-family:monospace;font-size:11px;color:#64748b;margin-left:6px}
-pre{font-family:monospace;font-size:13px;line-height:1.7;color:#cbd5e1;padding:14px;min-height:130px;white-space:pre-wrap}
-.cmd{color:#22c55e}
-h2{color:#38bdf8;font-size:22px;font-weight:500;margin-top:32px}
-.stack{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
-.stack span{padding:8px 16px;border-radius:999px;border:1px solid #1e4a6e;background:rgba(10,30,50,.8);color:#7dd3fc;font-size:14px}
-footer{margin-top:36px;font-size:13px;color:#64748b}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramazan Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        body > *:not(canvas):not(script) { position: relative; z-index: 1; }
+        .cur { display: inline-block; width: 2px; height: 0.9em; background: #38bdf8; margin-left: 3px; vertical-align: -0.05em; animation: blink 1s steps(1) infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        #role { min-height: 1.3em; }
+    </style>
 </head>
 <body>
-<canvas id="bg"></canvas>
-<main>
-  <div class="tag">&lt;/&gt; portfolio v1.0</div>
-  <h1><span id="t1"></span><span class="cur"></span></h1>
-  <div class="role"><span id="t2"></span><span class="cur"></span></div>
+    <canvas id="bg"></canvas>
+    <button id="lang" aria-label="Language">UZ</button>
 
-  <div class="links">
-    <a class="btn" href="https://t.me/bax1iyarovch" target="_blank">Telegram</a>
-    <a class="btn" href="lab.html">🌌 3D Lab</a>
-    <a class="btn" href="https://github.com/bax1iyarvch-png" target="_blank">GitHub</a>
-    <a class="btn" href="mailto:bax1iyarvch@gmail.com">✉️ Contact</a>
-  </div>
+    <h1><span id="name">Hello, I'm Ramazan!</span><span class="cur"></span></h1>
+    <h2><span id="role">Future Web Developer</span><span class="cur"></span></h2>
+    <p data-i18n="welcome">Welcome to my first website.</p>
+    <div>
+        <a class="btn" href="https://t.me/bax1iyarovch" target="_blank">Telegram</a>
+        <a href="lab.html" class="btn">🌌 3D Lab</a>
+        <a class="btn" href="https://github.com/bax1iyarvch-png" target="_blank">GitHub</a>
+        <a class="btn" href="mailto:bax1iyarvch@gmail.com">✉️ Contact</a>
+    </div>
 
-  <div class="term">
-    <div class="bar"><i style="background:#ef4444"></i><i style="background:#eab308"></i><i style="background:#22c55e"></i><span>ramazan@portfolio:~</span></div>
-    <pre id="term"></pre>
-  </div>
+    <section class="terminal">
+        <div class="terminal-bar">
+            <span></span><span></span><span></span>
+            <em>ramazan@portfolio:~</em>
+        </div>
+        <div class="terminal-body">
+            <div class="line" style="--n:8; --d:0.3s">$ whoami</div>
+            <div class="line out" style="--n:33; --d:0.9s">&gt; Ramazan, aspiring web developer</div>
+            <div class="line" style="--n:15; --d:2.6s">$ cat stack.txt</div>
+            <div class="line out" style="--n:27; --d:3.3s">&gt; HTML · CSS · Git · GitHub</div>
+            <div class="line" style="--n:8; --d:4.8s">$ status</div>
+            <div class="line out last" style="--n:30; --d:5.4s">&gt; learning JavaScript &amp; 3D web</div>
+        </div>
+    </section>
 
-  <h2>Tech Stack</h2>
-  <div class="stack">
-    <span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>Git</span><span>GitHub Pages</span>
-  </div>
+    <section class="block reveal">
+        <h3 data-i18n="tech">Tech Stack</h3>
+        <div class="chips">
+            <span class="chip">HTML5</span>
+            <span class="chip">CSS3</span>
+            <span class="chip">Git</span>
+            <span class="chip">GitHub Pages</span>
+            <span class="chip learning">JavaScript (learning)</span>
+        </div>
+    </sections
+      
+    <section class="block reveal">
+        <h3>GitHub</h3>
+        <div class="stats">
+            <div class="stat"><b id="s-repos">-</b><span data-i18n="repos">Repositories</span></div>
+            <div class="stat"><b id="s-fol">-</b><span data-i18n="followers">Followers</span></div>
+            <div class="stat wide"><b id="s-last">-</b><span data-i18n="latest">Latest project</span></div>
+        </div>
+    </section>
 
-  <footer>© 2026 Ramazan</footer>
-</main>
+    <section class="block reveal">
+        <h3 data-i18n="projects">Projects</h3>
+        <div class="cards">
+            <a class="card" href="lab.html">
+                <strong>🌌 3D Lab</strong>
+                <span data-i18n="labDesc">Experiments with 3D on the web.</span>
+            </a>
+            <a class="card" href="https://github.com/bax1iyarvch-png/ramazan-portfolio" target="_blank">
+                <strong>💼 This Portfolio</strong>
+                <span data-i18n="portDesc">My first website, built with HTML &amp; CSS.</span>
+            </a>
+        </div>
+    </section>
 
-<script>
-const c=document.getElementById('bg'),x=c.getContext('2d');
-let w,h,p=[],m={x:-999,y:-999};
-function r(){w=c.width=innerWidth;h=c.height=innerHeight}
-r();addEventListener('resize',r);
-addEventListener('pointermove',e=>{m.x=e.clientX;m.y=e.clientY});
-addEventListener('pointerleave',()=>{m.x=-999;m.y=-999});
-for(let i=0;i<70;i++)p.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.6,vy:(Math.random()-.5)*.6});
-(function a(){
-x.clearRect(0,0,w,h);
-p.forEach((s,i)=>{
-s.x+=s.vx;s.y+=s.vy;
-if(s.x<0||s.x>w)s.vx*=-1;
-if(s.y<0||s.y>h)s.vy*=-1;
-x.fillStyle='#38bdf8';x.fillRect(s.x,s.y,2,2);
-for(let j=i+1;j<p.length;j++){
-const q=p[j],d=Math.hypot(s.x-q.x,s.y-q.y);
-if(d<110){x.strokeStyle='rgba(56,189,248,'+(1-d/110)*.8+')';x.beginPath();x.moveTo(s.x,s.y);x.lineTo(q.x,q.y);x.stroke()}
-}
-const dm=Math.hypot(s.x-m.x,s.y-m.y);
-if(dm<150){x.strokeStyle='rgba(56,189,248,'+(1-dm/150)+')';x.beginPath();x.moveTo(s.x,s.y);x.lineTo(m.x,m.y);x.stroke()}
-});
-requestAnimationFrame(a)})();
+    <footer class="reveal" data-i18n="footer">© 2026 Ramazan · Built with HTML &amp; CSS</footer>
 
-const sl=ms=>new Promise(r=>setTimeout(r,ms));
-async function type(el,s,sp){for(const ch of s){el.textContent+=ch;await sl(sp)}}
-async function head(){await type(document.getElementById('t1'),"Hello, I'm Ramazan!",60)}
-async function roles(){
-const t=document.getElementById('t2'),L=['Future Web Developer','Creative Coder','3D Explorer'];
-await sl(1500);let i=0;
-while(true){
-await type(t,L[i],55);await sl(1400);
-while(t.textContent.length){t.textContent=t.textContent.slice(0,-1);await sl(25)}
-await sl(250);i=(i+1)%L.length}}
-async function term(){
-const t=document.getElementById('term');
-const S=[['$ whoami','> Ramazan, aspiring web dev'],['$ ls skills/','> HTML5  CSS3  Git  JS'],['$ echo $GOAL','> become a pro developer']];
-await sl(2200);
-while(true){
-t.textContent='';
-for(const [cmd,out] of S){
-const sp=document.createElement('span');sp.className='cmd';t.appendChild(sp);
-await type(sp,cmd,45);await sl(300);
-t.appendChild(document.createTextNode('\n'+out+'\n'));await sl(700)}
-await sl(3000)}}
-head();roles();term();
-</script>
+    <script>
+    /* ---------- particle background + spotlight ---------- */
+    const c = document.getElementById('bg'), x = c.getContext('2d');
+    const root = document.documentElement;
+    let w, h, p = [], m = { x: -999, y: -999 };
+    function resize() { w = c.width = innerWidth; h = c.height = innerHeight; }
+    resize();
+    addEventListener('resize', resize);
+    addEventListener('pointermove', e => {
+        m.x = e.clientX; m.y = e.clientY;
+        root.style.setProperty('--mx', e.clientX + 'px');
+        root.style.setProperty('--my', e.clientY + 'px');
+    });
+    for (let i = 0; i < 70; i++) {
+        p.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - .5) * .6, vy: (Math.random() - .5) * .6 });
+    }
+    (function draw() {
+        x.clearRect(0, 0, w, h);
+        p.forEach((a, i) => {
+            a.x += a.vx; a.y += a.vy;
+            if (a.x < 0 || a.x > w) a.vx *= -1;
+            if (a.y < 0 || a.y > h) a.vy *= -1;
+            x.fillStyle = '#38bdf8';
+            x.fillRect(a.x, a.y, 2, 2);
+            for (let j = i + 1; j < p.length; j++) {
+                const b = p[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+                if (d < 110) {
+                    x.strokeStyle = 'rgba(56,189,248,' + (1 - d / 110) * .8 + ')';
+                    x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(b.x, b.y); x.stroke();
+                }
+            }
+            const dm = Math.hypot(a.x - m.x, a.y - m.y);
+            if (dm < 150) {
+                x.strokeStyle = 'rgba(56,189,248,' + (1 - dm / 150) + ')';
+                x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(m.x, m.y); x.stroke();
+            }
+        });
+        requestAnimationFrame(draw);
+    })();
+
+    /* ---------- scroll animation ---------- */
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add('show'); io.unobserve(e.target); }
+        });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    /* ---------- languages ---------- */
+    const T = {
+        en: {
+            hello: "Hello, I'm Ramazan!",
+            roles: ['Future Web Developer', 'Creative Coder', '3D Explorer'],
+            welcome: 'Welcome to my first website.',
+            tech: 'Tech Stack', skills: 'Skills', projects: 'Projects',
+            repos: 'Repositories', followers: 'Followers', latest: 'Latest project',
+            labDesc: 'Experiments with 3D on the web.',
+            portDesc: 'My first website, built with HTML & CSS.',
+            footer: '© 2026 Ramazan · Built with HTML & CSS'
+        },
+        uz: {
+            hello: 'Salom, men Ramazan!',
+            roles: ['Kelajak veb dasturchisi', 'Ijodkor kodchi', '3D tadqiqotchi'],
+            welcome: 'Birinchi saytimga xush kelibsiz.',
+            tech: 'Texnologiyalar', skills: "Ko'nikmalar", projects: 'Loyihalar',
+            repos: 'Repozitoriylar', followers: 'Kuzatuvchilar', latest: 'Oxirgi loyiha',
+            labDesc: 'Veb-saytda 3D tajribalar.',
+            portDesc: 'Birinchi saytim, HTML va CSS bilan yaratilgan.',
+            footer: '© 2026 Ramazan · HTML va CSS bilan yaratilgan'
+        }
+    };
+    let lang = 'en', run = 0;
+    try { lang = localStorage.getItem('lang') || 'en'; } catch (e) {}
+
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    async function type(el, s, speed, id) {
+        for (const ch of s) {
+            if (id !== run) return false;
+            el.textContent += ch;
+            await sleep(speed);
+        }
+        return true;
+    }
+    async function startTyping() {
+        const id = ++run, d = T[lang];
+        const n = document.getElementById('name'), r = document.getElementById('role');
+        n.textContent = ''; r.textContent = '';
+        if (!await type(n, d.hello, 60, id)) return;
+        await sleep(800);
+        let i = 0;
+        while (id === run) {
+            if (!await type(r, d.roles[i], 55, id)) return;
+            await sleep(1500);
+            while (r.textContent.length && id === run) {
+                r.textContent = r.textContent.slice(0, -1);
+                await sleep(25);
+            }
+            i = (i + 1) % d.roles.length;
+        }
+    }
+    function setLang(l) {
+        lang = l;
+        try { localStorage.setItem('lang', l); } catch (e) {}
+        document.documentElement.lang = l;
+        document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = T[l][el.dataset.i18n]; });
+        document.getElementById('lang').textContent = l === 'en' ? 'UZ' : 'EN';
+        startTyping();
+    }
+    document.getElementById('lang').addEventListener('click', () => setLang(lang === 'en' ? 'uz' : 'en'));
+    setLang(lang);
+
+    /* ---------- GitHub stats ---------- */
+    const USER = 'bax1iyarvch-png';
+    fetch('https://api.github.com/users/' + USER)
+        .then(r => r.json())
+        .then(u => {
+            if (u.public_repos === undefined) return;
+            document.getElementById('s-repos').textContent = u.public_repos;
+            document.getElementById('s-fol').textContent = u.followers;
+        }).catch(() => {});
+    fetch('https://api.github.com/users/' + USER + '/repos?sort=updated&per_page=1')
+        .then(r => r.json())
+        .then(a => { if (a && a[0]) document.getElementById('s-last').textContent = a[0].name; })
+        .catch(() => {});
+    </script>
 </body>
 </html>
