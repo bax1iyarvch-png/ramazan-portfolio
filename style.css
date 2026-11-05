@@ -42,3 +42,30 @@ p {
     border-radius: 12px;
     border: 1px solid rgba(56, 189, 248, 0.3);
 }
+.btn{display:inline-block;margin:20px 5px 0;padding:10px 22px;border-radius:999px;border:1px solid rgba(56,189,248,.5);background:rgba(56,189,248,.08);color:#38bdf8;text-decoration:none;transition:.25s}
+.btn:hover{background:#38bdf8;color:#0f172a;transform:translateY(-2px)}
+
+.terminal{width:100%;max-width:520px;margin-top:45px;text-align:left;background:rgba(2,6,23,.85);border:1px solid rgba(56,189,248,.3);border-radius:12px;overflow:hidden;font-family:'Courier New',monospace;box-shadow:0 0 25px rgba(56,189,248,.15)}
+.terminal-bar{display:flex;align-items:center;gap:7px;padding:10px 14px;background:rgba(255,255,255,.06)}
+.terminal-bar span{width:11px;height:11px;border-radius:50%;background:#ef4444}
+.terminal-bar span:nth-child(2){background:#eab308}
+.terminal-bar span:nth-child(3){background:#22c55e}
+.terminal-bar em{margin-left:10px;font-size:12px;font-style:normal;color:#94a3b8}
+.terminal-body{padding:16px;font-size:14px;line-height:1.9}
+.line{width:0;overflow:hidden;white-space:nowrap;color:#22c55e;animation:typing calc(var(--n)*.045s) steps(var(--n)) var(--d) forwards}
+.line.out{color:#e2e8f0}
+.line.last{border-right:2px solid #38bdf8;animation:typing calc(var(--n)*.045s) steps(var(--n)) var(--d) forwards,blink .8s step-end infinite}
+@keyframes typing{to{width:calc(var(--n)*1ch)}}
+@keyframes blink{50%{border-color:transparent}}
+
+.block{width:100%;max-width:520px;margin-top:40px}
+.block h3{color:#38bdf8;font-size:20px;margin-bottom:15px;letter-spacing:1px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.chip{padding:7px 16px;border-radius:999px;font-size:14px;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.4);color:#7dd3fc}
+.chip.learning{background:rgba(234,179,8,.1);border-color:rgba(234,179,8,.45);color:#fde047}
+.cards{display:grid;gap:14px}
+.card{display:flex;flex-direction:column;gap:6px;padding:18px;text-align:left;text-decoration:none;color:#e2e8f0;background:rgba(255,255,255,.05);border:1px solid rgba(56,189,248,.3);border-radius:12px;transition:.25s}
+.card strong{color:#38bdf8;font-size:17px}
+.card span{color:#94a3b8;font-size:14px;line-height:1.5}
+.card:hover{transform:translateY(-3px);border-color:#38bdf8;box-shadow:0 6px 20px rgba(56,189,248,.2)}
+footer{margin-top:45px;font-size:13px;color:#64748b}
