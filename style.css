@@ -6,7 +6,8 @@
 }
 
 body {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
+    background: url("4a5a8d3e273d370370065aea9524e300.jpg") no-repeat center center fixed;
+background-size: cover;
     color: #e2e8f0;
     font-family: 'Segoe UI', Arial, sans-serif;
     min-height: 100vh;
