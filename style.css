@@ -188,3 +188,6 @@ body::before {
 .stat span { font-size: 13px; color: #94a3b8; }
 .stat.wide { grid-column: 1 / -1; }
 .stat.wide b { font-size: 18px; }
+body > div .btn:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+}
