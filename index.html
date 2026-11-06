@@ -1,216 +1,327 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
-    <link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramazan Portfolio</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        #bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-        body > *:not(canvas):not(script) { position: relative; z-index: 1; }
-        .cur { display: inline-block; width: 2px; height: 0.9em; background: #38bdf8; margin-left: 3px; vertical-align: -0.05em; animation: blink 1s steps(1) infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
-        #role { min-height: 1.3em; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ramazan Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f0ea;
+  --ink:#121217;
+  --muted:#5b5b66;
+  --card:#f7f4ef;
+  --dark:#121217;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;
+  overflow-x:hidden;line-height:1.5;
+}
+a{color:inherit;text-decoration:none}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ===== NAV ===== */
+.nav{
+  position:fixed;top:16px;left:16px;right:16px;z-index:50;
+  display:flex;justify-content:space-between;
+}
+.pill{
+  padding:14px 28px;border-radius:999px;
+  font-size:18px;font-weight:500;color:var(--ink);
+  background:rgba(255,255,255,.55);
+  border:1px solid rgba(255,255,255,.8);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+  cursor:pointer;font-family:inherit;
+}
+
+/* ===== MENU ===== */
+.menu{
+  position:fixed;inset:0;z-index:40;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:100px 16px 16px;
+  background:rgba(243,240,234,.35);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.menu.open{opacity:1;pointer-events:auto}
+.menu-box{
+  width:100%;max-width:520px;background:#e6e2da;border-radius:36px;
+  padding:28px 30px;box-shadow:0 20px 50px rgba(0,0,0,.18);
+  transform:translateY(-20px) scale(.97);transition:transform .35s;
+}
+.menu.open .menu-box{transform:none}
+.menu-box a.big{
+  display:block;font-size:46px;font-weight:800;letter-spacing:-.04em;
+  line-height:1.2;margin:10px 0;
+}
+.menu-box .cta{
+  display:block;text-align:center;margin-top:20px;
+  background:var(--dark);color:#fff;border-radius:999px;
+  padding:18px;font-weight:600;font-size:20px;
+}
+
+/* ===== HERO ===== */
+.hero{
+  position:relative;min-height:100svh;overflow:hidden;
+  background:
+    radial-gradient(circle at 20% 15%,#b9a9ee 0,transparent 45%),
+    radial-gradient(circle at 90% 10%,#f0b4ac 0,transparent 40%),
+    radial-gradient(circle at 60% 85%,#f3d3a4 0,transparent 45%),
+    #e3d9e6;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 20px 36px;
+}
+.hero::after{ /* grain */
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.25;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.hero-title{
+  position:absolute;left:0;right:0;top:46%;transform:translateY(-50%);
+  text-align:center;font-size:clamp(78px,24vw,150px);font-weight:800;
+  letter-spacing:-.05em;line-height:.85;color:rgba(255,255,255,.7);
+  pointer-events:none;
+}
+.float{
+  position:absolute;border-radius:28px;
+  box-shadow:0 20px 40px rgba(40,20,80,.25);
+  animation:bob 6s ease-in-out infinite;
+  overflow:hidden;color:#fff;padding:18px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+}
+.float b{font-size:22px;letter-spacing:-.03em;line-height:1.1}
+.float small{opacity:.8;font-size:12px;margin-top:4px}
+.f1{width:170px;height:230px;left:6%;top:150px;transform:rotate(-8deg);
+    background:linear-gradient(160deg,#0f172a,#2563eb)}
+.f2{width:230px;height:170px;right:-30px;top:190px;transform:rotate(5deg);
+    background:linear-gradient(135deg,#7c3aed,#ec4899);animation-delay:-2s}
+.f3{width:250px;height:190px;left:-30px;top:420px;transform:rotate(-5deg);
+    background:linear-gradient(135deg,#a3e635,#fb923c);color:#111;animation-delay:-4s}
+.f4{width:150px;height:240px;right:6%;top:430px;transform:rotate(9deg);
+    background:linear-gradient(170deg,#111827,#7f1d1d);animation-delay:-1s}
+@keyframes bob{50%{translate:0 -12px}}
+
+.hero-copy{position:relative;z-index:2;max-width:560px}
+.hero-copy p{font-size:21px;line-height:1.6;margin-bottom:24px}
+.hero-copy p strong{font-weight:800}
+.btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn{
+  display:inline-block;padding:16px 30px;border-radius:999px;
+  font-weight:600;font-size:19px;
+}
+.btn.dark{background:var(--dark);color:#fff;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.btn.light{background:rgba(255,245,230,.8);border:1px solid #fff}
+
+/* ===== SECTIONS ===== */
+section.pad{padding:80px 16px 40px}
+h2.title{
+  font-size:clamp(48px,15vw,110px);font-weight:800;
+  letter-spacing:-.05em;line-height:.9;text-transform:uppercase;
+  padding:0 4px;
+}
+.sub{
+  font-family:'JetBrains Mono',monospace;color:var(--muted);
+  font-size:16px;margin:22px 4px 40px;max-width:520px;
+}
+
+/* ===== WORK CARDS ===== */
+.work{
+  border-radius:48px;padding:34px 26px 40px;margin-bottom:24px;
+  box-shadow:0 14px 34px rgba(0,0,0,.08);
+}
+.work .shot{
+  height:230px;border-radius:24px;margin-bottom:26px;
+  box-shadow:0 14px 30px rgba(0,0,0,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:64px;
+}
+.chip{
+  display:inline-block;font-family:'JetBrains Mono',monospace;
+  background:rgba(255,255,255,.6);border-radius:999px;
+  padding:9px 18px;font-size:15px;margin:0 8px 8px 0;
+}
+.work h3{font-size:48px;font-weight:800;letter-spacing:-.05em;margin:14px 0}
+.work p{font-size:19px;line-height:1.7;color:#2e2e38;margin-bottom:20px}
+.w1{background:#bdb8e3}
+.w2{background:#c3cfe9}
+.w3{background:#d4cfc6}
+
+/* ===== PATH / EXPERIENCE ===== */
+.exp{background:#d9d3c8;border-radius:48px;padding:50px 22px;margin:0 0 24px}
+.item{
+  background:var(--card);border-radius:36px;padding:28px 26px;margin-top:20px;
+  box-shadow:0 10px 26px rgba(0,0,0,.06);
+}
+.item h4{font-size:34px;font-weight:800;letter-spacing:-.04em;margin:12px 0 4px}
+.item .role{color:var(--muted);font-size:18px;margin-bottom:14px}
+.item ul{padding-left:22px;font-size:18px;line-height:1.7;color:#2e2e38}
+
+/* ===== DARK ===== */
+.dark-sec{
+  background:var(--dark);color:#f4f0e8;border-radius:48px;
+  padding:50px 24px;margin-bottom:24px;
+}
+.dark-sec h2{font-size:clamp(46px,14vw,100px);font-weight:800;letter-spacing:-.05em;line-height:.95}
+.dark-sec p{font-size:20px;line-height:1.7;color:#cfcad8;margin:22px 0}
+.dark-sec .chip{background:#26262d;color:#eee}
+
+/* ===== CONTACT ===== */
+.links{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:30px}
+.links a{
+  background:#e6e2da;border-radius:28px;padding:22px 14px;text-align:center;
+  font-size:19px;font-weight:600;box-shadow:0 8px 20px rgba(0,0,0,.06);
+  transition:transform .2s;
+}
+.links a:active{transform:scale(.96)}
+.links a.wide{grid-column:1/-1;background:var(--dark);color:#fff}
+footer{text-align:center;color:var(--muted);padding:40px 16px 60px;font-size:15px}
+
+/* ===== REVEAL ===== */
+.rv{opacity:0;transform:translateY(40px);transition:all .8s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+</style>
 </head>
 <body>
-    <canvas id="bg"></canvas>
-    <button id="lang" aria-label="Language">UZ</button>
 
-    <h1><span id="name">Hello, I'm Ramazan!</span><span class="cur"></span></h1>
-    <h2><span id="role">Future Web Developer</span><span class="cur"></span></h2>
-    <p data-i18n="welcome">Welcome to my first website.</p>
-    <div>
-        <a class="btn" href="https://t.me/bax1iyarovch" target="_blank">✈️ Telegram</a>
-        <a class="btn" href="https://instagram.com/bxtiyarvch" target="_blank">📸 Instagram</a>
-        <a href="lab.html" class="btn">🌌 3D Lab</a>
-        <a href="globe.html" class="btn">🌍 3D Globe</a>
-        <a href="domalaq.html" class="btn">⭕ Domalaq oyin</a>
-        <a class="btn" href="https://github.com/bax1iyarvch-png" target="_blank">🐱 GitHub</a>
-        <a class="btn" href="mailto:bax1iyarvch@gmail.com">✉️ Contact</a>
+<!-- NAV -->
+<div class="nav">
+  <a class="pill" href="#top">Ramazan</a>
+  <button class="pill" id="menuBtn">Menu</button>
+</div>
+
+<!-- MENU -->
+<div class="menu" id="menu">
+  <div class="menu-box">
+    <a class="big" href="#work">Work</a>
+    <a class="big" href="#path">Path</a>
+    <a class="big" href="#stack">Stack</a>
+    <a class="big" href="#contact">Contact</a>
+    <a class="cta" href="lab.html">3D Lab ↗</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-title">RAMAZAN</div>
+
+  <div class="float f1"><b>3D Lab</b><small>Three.js</small></div>
+  <div class="float f2"><b>3D Globe</b><small>Interactive</small></div>
+  <div class="float f3"><b>Domalaq oyin</b><small>Mini game</small></div>
+  <div class="float f4"><b>Portfolio</b><small>HTML · CSS</small></div>
+
+  <div class="hero-copy">
+    <p><strong>Future web developer.</strong> Men veb-saytlar va 3D tajribalar yarataman, har kuni yangi narsa o'rganyapman.</p>
+    <div class="btns">
+      <a class="btn dark" href="#work">See the work ↓</a>
+      <a class="btn light" href="https://t.me/bax1iyarovch">Telegram ↗</a>
+    </div>
+  </div>
+</header>
+
+<!-- WORK -->
+<section class="pad" id="work">
+  <h2 class="title rv">The<br>Work</h2>
+  <p class="sub rv">Har biri o'zim yozgan: g'oya, kod va joylashtirish.</p>
+
+  <article class="work w1 rv">
+    <div class="shot" style="background:linear-gradient(135deg,#0f172a,#2563eb);color:#fff">🌌</div>
+    <span class="chip">3D · 2026</span>
+    <h3>3D Lab</h3>
+    <p>3D elementlar bilan tajriba qiladigan laboratoriya sahifam.</p>
+    <span class="chip">JavaScript</span><span class="chip">3D web</span><br><br>
+    <a class="btn dark" href="lab.html">Open 3D Lab ↗</a>
+  </article>
+
+  <article class="work w2 rv">
+    <div class="shot" style="background:linear-gradient(135deg,#0ea5e9,#22c55e)">🌍</div>
+    <span class="chip">3D · 2026</span>
+    <h3>3D Globe</h3>
+    <p>Aylanadigan interaktiv Yer shari.</p>
+    <span class="chip">JavaScript</span><span class="chip">WebGL</span><br><br>
+    <a class="btn dark" href="globe.html">Open Globe ↗</a>
+  </article>
+
+  <article class="work w3 rv">
+    <div class="shot" style="background:linear-gradient(135deg,#f97316,#ef4444)">⭕</div>
+    <span class="chip">Game · 2026</span>
+    <h3>Domalaq oyin</h3>
+    <p>Brauzerda o'ynaladigan kichik o'yin.</p>
+    <span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JS</span><br><br>
+    <a class="btn dark" href="domalaq.html">Play ↗</a>
+  </article>
+</section>
+
+<!-- PATH -->
+<section class="pad" id="path" style="padding-top:20px">
+  <div class="exp">
+    <h2 class="title rv" style="font-size:clamp(40px,12vw,90px)">Path</h2>
+    <p class="sub rv">Birinchi saytdan 3D loyihalargacha.</p>
+
+    <div class="item rv">
+      <span class="chip">2026 – Hozir</span>
+      <h4>JavaScript &amp; 3D web</h4>
+      <div class="role">O'rganish bosqichi</div>
+      <ul>
+        <li>Interaktiv sahifalar va animatsiyalar</li>
+        <li>3D Lab va Globe loyihalari</li>
+      </ul>
     </div>
 
-    <section class="terminal">
-        <div class="terminal-bar">
-            <span></span><span></span><span></span>
-            <em>ramazan@portfolio:~</em>
-        </div>
-        <div class="terminal-body">
-            <div class="line" style="--n:8; --d:0.3s">$ whoami</div>
-            <div class="line out" style="--n:33; --d:0.9s">&gt; Ramazan, aspiring web developer</div>
-            <div class="line" style="--n:15; --d:2.6s">$ cat stack.txt</div>
-            <div class="line out" style="--n:27; --d:3.3s">&gt; HTML · CSS · Git · GitHub</div>
-            <div class="line" style="--n:8; --d:4.8s">$ status</div>
-            <div class="line out last" style="--n:30; --d:5.4s">&gt; learning JavaScript &amp; 3D web</div>
-        </div>
-    </section>
-
-    <section class="block reveal">
-        <h3 data-i18n="tech">Tech Stack</h3>
-        <div class="chips">
-            <span class="chip">HTML5</span>
-            <span class="chip">CSS3</span>
-            <span class="chip">Git</span>
-            <span class="chip">GitHub Pages</span>
-            <span class="chip learning">JavaScript (learning)</span>
-        </div>
-    </section>
-      
-    <section class="block reveal">
-        <h3>GitHub</h3>
-        <div class="stats">
-            <div class="stat"><b id="s-repos">-</b><span data-i18n="repos">Repositories</span></div>
-            <div class="stat"><b id="s-fol">-</b><span data-i18n="followers">Followers</span></div>
-            <div class="stat wide"><b id="s-last">-</b><span data-i18n="latest">Latest project</span></div>
-        </div>
-    </section>
-
-    <section class="block reveal">
-        <h3 data-i18n="projects">Projects</h3>
-        <div class="cards">
-            <a class="card" href="lab.html">
-                <strong>🌌 3D Lab</strong>
-                <span data-i18n="labDesc">Experiments with 3D on the web.</span>
-            </a>
-            <a class="card" href="https://github.com/bax1iyarvch-png/ramazan-portfolio" target="_blank">
-                <strong>💼 This Portfolio</strong>
-                <span data-i18n="portDesc">My first website, built with HTML &amp; CSS.</span>
-            </a>
-        </div>
-    </section>
-<section class="block reveal">
-    <h3>Sukunaa⛩️</h3>
-    <iframe src="video.html" title="Video" loading="lazy" allow="autoplay; fullscreen"
-        style="display:block;width:100%;max-width:340px;aspect-ratio:700/1036;border:1px solid rgba(56,189,248,.4);border-radius:14px;margin:0 auto;background:#000"></iframe>
+    <div class="item rv">
+      <span class="chip">2026</span>
+      <h4>Birinchi sayt</h4>
+      <div class="role">HTML · CSS · Git · GitHub</div>
+      <ul>
+        <li>Shaxsiy portfolio saytini GitHub Pages'da joylashtirdim</li>
+        <li>Dizayn va ranglarni o'zim sozlayman</li>
+      </ul>
+    </div>
+  </div>
 </section>
-    <footer class="reveal" data-i18n="footer">© 2026 Ramazan · Built with HTML &amp; CSS</footer>
 
-    <script>
-    /* ---------- particle background + spotlight ---------- */
-    const c = document.getElementById('bg'), x = c.getContext('2d');
-    const root = document.documentElement;
-    let w, h, p = [], m = { x: -999, y: -999 };
-    function resize() { w = c.width = innerWidth; h = c.height = innerHeight; }
-    resize();
-    addEventListener('resize', resize);
-    addEventListener('pointermove', e => {
-        m.x = e.clientX; m.y = e.clientY;
-        root.style.setProperty('--mx', e.clientX + 'px');
-        root.style.setProperty('--my', e.clientY + 'px');
-    });
-    for (let i = 0; i < 70; i++) {
-        p.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - .5) * .6, vy: (Math.random() - .5) * .6 });
-    }
-    (function draw() {
-        x.clearRect(0, 0, w, h);
-        p.forEach((a, i) => {
-            a.x += a.vx; a.y += a.vy;
-            if (a.x < 0 || a.x > w) a.vx *= -1;
-            if (a.y < 0 || a.y > h) a.vy *= -1;
-            x.fillStyle = '#38bdf8';
-            x.fillRect(a.x, a.y, 2, 2);
-            for (let j = i + 1; j < p.length; j++) {
-                const b = p[j], d = Math.hypot(a.x - b.x, a.y - b.y);
-                if (d < 110) {
-                    x.strokeStyle = 'rgba(56,189,248,' + (1 - d / 110) * .8 + ')';
-                    x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(b.x, b.y); x.stroke();
-                }
-            }
-            const dm = Math.hypot(a.x - m.x, a.y - m.y);
-            if (dm < 150) {
-                x.strokeStyle = 'rgba(56,189,248,' + (1 - dm / 150) + ')';
-                x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(m.x, m.y); x.stroke();
-            }
-        });
-        requestAnimationFrame(draw);
-    })();
+<!-- STACK (dark) -->
+<section style="padding:0 16px" id="stack">
+  <div class="dark-sec rv">
+    <p class="mono" style="font-size:15px;color:#9a96a6;margin:0 0 18px">Tech stack</p>
+    <h2>HTML.<br>CSS.<br>JS.</h2>
+    <p>Hozir asosiy e'tibor: toza kod, chiroyli dizayn va 3D.</p>
+    <span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">Git</span>
+    <span class="chip">GitHub</span><span class="chip">JavaScript (o'rganyapman)</span>
+  </div>
+</section>
 
-    /* ---------- scroll animation ---------- */
-    const io = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-            if (e.isIntersecting) { e.target.classList.add('show'); io.unobserve(e.target); }
-        });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+<!-- CONTACT -->
+<section class="pad" id="contact" style="padding-top:40px">
+  <h2 class="title rv">Say<br>Hello</h2>
+  <div class="links rv">
+    <a href="https://t.me/bax1iyarovch">✈️ Telegram</a>
+    <a href="https://instagram.com/bxtiyrvch" target="_blank" rel="noopener">📸 Instagram</a>
+    <a href="https://github.com/bax1iyarvch-png">🐱 GitHub</a>
+    <a href="lab.html">🌌 3D Lab</a>
+    <a class="wide" href="mailto:bax1iyarvch@email.com">✉️ Contact</a>
+  </div>
+</section>
 
-    /* ---------- languages ---------- */
-    const T = {
-        en: {
-            hello: "Hello, I'm Ramazan!",
-            roles: ['Future Web Developer', 'Creative Coder', '3D Explorer'],
-            welcome: 'Welcome to my first website.',
-            tech: 'Tech Stack', skills: 'Skills', projects: 'Projects',
-            repos: 'Repositories', followers: 'Followers', latest: 'Latest project',
-            labDesc: 'Experiments with 3D on the web.',
-            portDesc: 'My first website, built with HTML & CSS.',
-            footer: '© 2026 Ramazan · Built with HTML & CSS'
-        },
-        uz: {
-            hello: 'Salom, men Ramazan!',
-            roles: ['Kelajak veb dasturchisi', 'Ijodkor kodchi', '3D tadqiqotchi'],
-            welcome: 'Birinchi saytimga xush kelibsiz.',
-            tech: 'Texnologiyalar', skills: "Ko'nikmalar", projects: 'Loyihalar',
-            repos: 'Repozitoriylar', followers: 'Kuzatuvchilar', latest: 'Oxirgi loyiha',
-            labDesc: 'Veb-saytda 3D tajribalar.',
-            portDesc: 'Birinchi saytim, HTML va CSS bilan yaratilgan.',
-            footer: '© 2026 Ramazan · HTML va CSS bilan yaratilgan'
-        }
-    };
-    let lang = 'en', run = 0;
-    try { lang = localStorage.getItem('lang') || 'en'; } catch (e) {}
+<footer>© 2026 Ramazan</footer>
 
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
-    async function type(el, s, speed, id) {
-        for (const ch of s) {
-            if (id !== run) return false;
-            el.textContent += ch;
-            await sleep(speed);
-        }
-        return true;
-    }
-    async function startTyping() {
-        const id = ++run, d = T[lang];
-        const n = document.getElementById('name'), r = document.getElementById('role');
-        n.textContent = ''; r.textContent = '';
-        if (!await type(n, d.hello, 60, id)) return;
-        await sleep(800);
-        let i = 0;
-        while (id === run) {
-            if (!await type(r, d.roles[i], 55, id)) return;
-            await sleep(1500);
-            while (r.textContent.length && id === run) {
-                r.textContent = r.textContent.slice(0, -1);
-                await sleep(25);
-            }
-            i = (i + 1) % d.roles.length;
-        }
-    }
-    function setLang(l) {
-        lang = l;
-        try { localStorage.setItem('lang', l); } catch (e) {}
-        document.documentElement.lang = l;
-        document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = T[l][el.dataset.i18n]; });
-        document.getElementById('lang').textContent = l === 'en' ? 'UZ' : 'EN';
-        startTyping();
-    }
-    document.getElementById('lang').addEventListener('click', () => setLang(lang === 'en' ? 'uz' : 'en'));
-    setLang(lang);
+<script>
+  const menu = document.getElementById('menu');
+  const btn = document.getElementById('menuBtn');
+  function toggle(open){
+    menu.classList.toggle('open', open);
+    btn.textContent = open ? 'Close' : 'Menu';
+  }
+  btn.addEventListener('click', () => toggle(!menu.classList.contains('open')));
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggle(false)));
 
-    /* ---------- GitHub stats ---------- */
-    const USER = 'bax1iyarvch-png';
-    fetch('https://api.github.com/users/' + USER)
-        .then(r => r.json())
-        .then(u => {
-            if (u.public_repos === undefined) return;
-            document.getElementById('s-repos').textContent = u.public_repos;
-            document.getElementById('s-fol').textContent = u.followers;
-        }).catch(() => {});
-    fetch('https://api.github.com/users/' + USER + '/repos?sort=updated&per_page=1')
-        .then(r => r.json())
-        .then(a => { if (a && a[0]) document.getElementById('s-last').textContent = a[0].name; })
-        .catch(() => {});
-    </script>
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: .12 });
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+</script>
 </body>
 </html>
