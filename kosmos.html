@@ -1,0 +1,385 @@
+
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Qaraqalpaq 3D Kosmos Simulator</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  background: #050510;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  touch-action: none;
+}
+
+canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+#ui {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  color: #00ffcc;
+  font-size: 16px;
+  font-weight: bold;
+  text-shadow: 0 0 5px #00ffcc;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.controls {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 10;
+}
+
+.dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 50px);
+  gap: 5px;
+}
+
+.btn {
+  width: 50px;
+  height: 50px;
+  background: rgba(0,255,204,0.3);
+  border: 2px solid #00ffcc;
+  border-radius: 50%;
+  color: white;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:active {
+  background: rgba(0,255,204,0.7);
+}
+
+.btn-act {
+  width: 65px;
+  height: 65px;
+  background: rgba(255,50,50,0.5);
+  border: 2px solid #ff3333;
+  font-size: 14px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.btn-act:active {
+  background: rgba(255,50,50,0.8);
+}
+</style>
+</head>
+
+<body>
+
+<div id="ui">
+  🚀 KEME: Qaraqalpaq-3D |
+  🎯 UPOY: <span id="sc">0</span>
+</div>
+
+<canvas id="c"></canvas>
+
+<div class="controls">
+
+  <div class="dpad">
+    <div></div>
+    <div class="btn" id="u">▲</div>
+    <div></div>
+
+    <div class="btn" id="l">◀</div>
+    <div></div>
+    <div class="btn" id="r">▶</div>
+
+    <div></div>
+    <div class="btn" id="d">▼</div>
+    <div></div>
+  </div>
+
+  <div class="btn-act" id="f">ATW 🔥</div>
+
+</div>
+
+<script>
+const c = document.getElementById('c');
+const ctx = c.getContext('2d');
+
+function resize() {
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+}
+
+window.addEventListener('resize', resize);
+resize();
+
+// 3D JULDIZLAR
+
+const stars = Array.from({length: 120}, () => ({
+  x: (Math.random()-0.5)*80,
+  y: (Math.random()-0.5)*80,
+  z: Math.random()*100
+}));
+
+// KEME
+
+const player = {
+  x: 0,
+  y: 0,
+  score: 0
+};
+
+// ASTEROIDLER
+
+const asteroids = Array.from({length: 10}, () => ({
+  x: (Math.random()-0.5)*40,
+  y: (Math.random()-0.5)*30,
+  z: 20+Math.random()*80,
+  size: 2
+}));
+
+// LAZERLER
+
+const lasers = [];
+
+const keys = {};
+
+// BASQARIW
+
+function bind(id, k) {
+  const el = document.getElementById(id);
+
+  el.addEventListener('touchstart', e => {
+    e.preventDefault();
+    keys[k] = true;
+  });
+
+  el.addEventListener('touchend', e => {
+    e.preventDefault();
+    keys[k] = false;
+  });
+
+  el.addEventListener('touchcancel', () => {
+    keys[k] = false;
+  });
+
+  el.addEventListener('mousedown', () => {
+    keys[k] = true;
+  });
+
+  el.addEventListener('mouseup', () => {
+    keys[k] = false;
+  });
+
+  el.addEventListener('mouseleave', () => {
+    keys[k] = false;
+  });
+}
+
+bind('u','u');
+bind('d','d');
+bind('l','l');
+bind('r','r');
+
+document.getElementById('f').addEventListener('touchstart', e => {
+  e.preventDefault();
+  shoot();
+});
+
+document.getElementById('f').addEventListener('click', shoot);
+
+function shoot() {
+  lasers.push({
+    x: player.x,
+    y: player.y,
+    z: 2
+  });
+}
+
+// KLAVIATURA
+
+window.addEventListener('keydown', e => {
+  if(e.key === 'ArrowUp' || e.key === 'w') keys.u = true;
+  if(e.key === 'ArrowDown' || e.key === 's') keys.d = true;
+  if(e.key === 'ArrowLeft' || e.key === 'a') keys.l = true;
+  if(e.key === 'ArrowRight' || e.key === 'd') keys.r = true;
+
+  if(e.code === 'Space' && !e.repeat) shoot();
+});
+
+window.addEventListener('keyup', e => {
+  if(e.key === 'ArrowUp' || e.key === 'w') keys.u = false;
+  if(e.key === 'ArrowDown' || e.key === 's') keys.d = false;
+  if(e.key === 'ArrowLeft' || e.key === 'a') keys.l = false;
+  if(e.key === 'ArrowRight' || e.key === 'd') keys.r = false;
+});
+
+// 3D PROEKCIYA
+
+function proj(x, y, z) {
+  const s = 300 / (z + 5);
+
+  return {
+    x: c.width/2 + x*s,
+    y: c.height/2 + y*s,
+    scale: s
+  };
+}
+
+// OYIN
+
+function loop() {
+
+  // KEMENI BASQARIW
+
+  if(keys.l && player.x > -15) player.x -= 0.35;
+  if(keys.r && player.x < 15) player.x += 0.35;
+  if(keys.u && player.y > -10) player.y -= 0.35;
+  if(keys.d && player.y < 10) player.y += 0.35;
+
+  // KOSMOS FONI
+
+  ctx.fillStyle = '#050510';
+  ctx.fillRect(0, 0, c.width, c.height);
+
+  // 3D JULDIZLAR
+
+  ctx.fillStyle = '#ffffff';
+
+  stars.forEach(s => {
+    s.z -= 0.6;
+
+    if(s.z <= 0) s.z = 100;
+
+    const p = proj(s.x, s.y, s.z);
+
+    ctx.beginPath();
+    ctx.arc(
+      p.x,
+      p.y,
+      Math.max(1, p.scale*0.06),
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+  });
+
+  // ASTEROIDLER
+
+  ctx.fillStyle = '#8888aa';
+
+  asteroids.forEach(a => {
+
+    a.z -= 0.35;
+
+    if(a.z <= 0) a.z = 90;
+
+    const p = proj(a.x, a.y, a.z);
+
+    ctx.beginPath();
+    ctx.arc(
+      p.x,
+      p.y,
+      Math.max(2, a.size*p.scale*0.5),
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+  });
+
+  // LAZERLER
+
+  for(let i = lasers.length-1; i >= 0; i--) {
+
+    const l = lasers[i];
+
+    l.z += 2.5;
+
+    const p = proj(l.x, l.y, l.z);
+
+    ctx.fillStyle = '#ff0055';
+    ctx.fillRect(p.x-2, p.y-2, 6, 6);
+
+    // ASTEROID PENEN URILISIW
+
+    asteroids.forEach(a => {
+
+      if(
+        Math.abs(l.x-a.x) < 2.5 &&
+        Math.abs(l.y-a.y) < 2.5 &&
+        Math.abs(l.z-a.z) < 4
+      ) {
+
+        a.z = 90;
+        a.x = (Math.random()-0.5)*40;
+
+        player.score += 10;
+
+        document.getElementById('sc').innerText =
+          player.score;
+
+        l.z = 1000;
+      }
+
+    });
+
+    if(l.z > 100) {
+      lasers.splice(i, 1);
+    }
+  }
+
+  // 3D KEME
+
+  const p = proj(player.x, player.y, 5);
+
+  ctx.fillStyle = '#00aaff';
+
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y-15);
+  ctx.lineTo(p.x-20, p.y+15);
+  ctx.lineTo(p.x+20, p.y+15);
+  ctx.closePath();
+  ctx.fill();
+
+  // KEME OT
+
+  ctx.fillStyle = '#ff6600';
+
+  ctx.beginPath();
+  ctx.moveTo(p.x-7, p.y+15);
+  ctx.lineTo(p.x, p.y+25+Math.random()*5);
+  ctx.lineTo(p.x+7, p.y+15);
+  ctx.closePath();
+  ctx.fill();
+
+  requestAnimationFrame(loop);
+}
+
+loop();
+
+</script>
+</body>
+</html>
